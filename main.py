@@ -53,6 +53,7 @@ def execute_sql(sql_string, **kwargs):
 @app.route('/home')
 @cache.memoize(make_name=make_cache_key)
 def home():
+  timeframe = request.args.get('timeframe', 'month')
 
   leaderboard = execute_sql('''
   SELECT 
