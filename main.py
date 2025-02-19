@@ -86,7 +86,6 @@ def home():
       AND u.BLOCK_TIME < CURRENT_DATE
       AND u.PAYMASTER != '0x0000000000000000000000000000000000000000'
   GROUP BY 1,2,3,4
-  ORDER BY ACTIVE_ACCOUNTS_30D DESC
   ''')
 
   total_paymaster_stats = execute_sql('''
