@@ -53,7 +53,7 @@ def execute_sql(sql_string, **kwargs):
 @app.route('/home')
 @cache.memoize(make_name=make_cache_key)
 def home():
-  timeframe = request.args.get('timeframe', 'month')
+  chain = request.args.get('chain', 'all')
 
   leaderboard = execute_sql('''
   SELECT 
@@ -76,7 +76,7 @@ def home():
       COUNT(DISTINCT CASE WHEN u.BLOCK_TIME > CURRENT_DATE - INTERVAL '90 days' THEN u.SENDER END) AS ACTIVE_ACCOUNTS_90D,
       COUNT(CASE WHEN u.BLOCK_TIME > CURRENT_DATE - INTERVAL '90 days' THEN u.OP_HASH END) AS GASLESS_TXNS_90D,
       ROW_NUMBER() OVER(ORDER BY COUNT(DISTINCT CASE WHEN u.BLOCK_TIME > CURRENT_DATE - INTERVAL '90 days' THEN u.SENDER END) DESC) AS RN_90D
-  FROM BUNDLEBEAR.DBT_KOFI.ERC4337_ALL_USEROPS u
+  FROM BUNDLEBEAR.DBT_KOFI.ERC4337_{chain}_USEROPS u
   INNER JOIN BUNDLEBEAR.DBT_KOFI.ERC4337_LABELS_APPS l 
       ON u.CALLED_CONTRACT = l.ADDRESS
       AND l.CATEGORY != 'factory'
@@ -86,15 +86,15 @@ def home():
       AND u.BLOCK_TIME < CURRENT_DATE
       AND u.PAYMASTER != '0x0000000000000000000000000000000000000000'
   GROUP BY 1,2,3,4
-  ''')
+  ''', chain=chain)
 
   total_paymaster_stats = execute_sql('''
   SELECT 
   COUNT(OP_HASH) AS GASLESS_TXNS,
   SUM(ACTUALGASCOST_USD) AS PAYMASTER_VOLUME
-  FROM BUNDLEBEAR.DBT_KOFI.ERC4337_ALL_USEROPS
+  FROM BUNDLEBEAR.DBT_KOFI.ERC4337_{chain}_USEROPS
   WHERE PAYMASTER != '0x0000000000000000000000000000000000000000' 
-  ''')
+  ''', chain=chain)
 
   response_data = {
     "leaderboard": leaderboard,
