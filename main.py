@@ -88,17 +88,17 @@ def home():
   GROUP BY 1,2,3,4
   ''', chain=chain)
 
-  total_paymaster_stats = execute_sql('''
-  SELECT 
-  COUNT(OP_HASH) AS GASLESS_TXNS,
-  SUM(ACTUALGASCOST_USD) AS PAYMASTER_VOLUME
-  FROM BUNDLEBEAR.DBT_KOFI.ERC4337_{chain}_USEROPS
-  WHERE PAYMASTER != '0x0000000000000000000000000000000000000000' 
-  ''', chain=chain)
+  # total_paymaster_stats = execute_sql('''
+  # SELECT 
+  # COUNT(OP_HASH) AS GASLESS_TXNS,
+  # SUM(ACTUALGASCOST_USD) AS PAYMASTER_VOLUME
+  # FROM BUNDLEBEAR.DBT_KOFI.ERC4337_{chain}_USEROPS
+  # WHERE PAYMASTER != '0x0000000000000000000000000000000000000000' 
+  # ''', chain=chain)
 
   response_data = {
-    "leaderboard": leaderboard,
-    "total_paymaster_stats": total_paymaster_stats
+    "leaderboard": leaderboard
+    # "total_paymaster_stats": total_paymaster_stats
   }
 
   return jsonify(response_data)
